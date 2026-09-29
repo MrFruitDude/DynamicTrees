@@ -1,6 +1,6 @@
 package com.dtteam.dynamictrees.data;
 
-import net.minecraft.util.Tuple;
+import com.dtteam.dynamictrees.utility.Tuple;
 
 /**
  * A generator for a resource, providing the means to construct a Json file using provided {@link Dependencies} and

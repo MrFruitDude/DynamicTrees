@@ -64,15 +64,16 @@ neoForge {
         }
     }
     dependencies {
-        implementation "curse.maven:jade-324717:8326300"
-        implementation "curse.maven:jei-238222:7904641"
+        compileOnly "curse.maven:jade-324717:8326300"
+        compileOnly "curse.maven:jei-238222:7904641"
 
-        implementation "curse.maven:glitchcore-955399:8109770"
-        implementation "maven.modrinth:serene-seasons:26.1.2.0.2"
+        compileOnly "curse.maven:glitchcore-955399:8109770"
+        compileOnly "maven.modrinth:serene-seasons:26.1.2.0.2"
         compileOnly "curse.maven:ecliptic-seasons-1118306:8128745"
 
         //runtimeOnly "curse.maven:patchouli-306770:6164617"
-        runtimeOnly "curse.maven:spark-361579:7815877"
+        // Spark is a local profiling aid and must not become a transitive requirement.
+        compileOnly "curse.maven:spark-361579:7815877"
     }
 }
 

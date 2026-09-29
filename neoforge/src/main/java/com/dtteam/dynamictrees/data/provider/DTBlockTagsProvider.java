@@ -7,8 +7,10 @@ import com.dtteam.dynamictrees.data.tags.DTBlockTags;
 import com.dtteam.dynamictrees.registry.DTRegistries;
 import com.dtteam.dynamictrees.tree.family.Family;
 import com.dtteam.dynamictrees.tree.species.Species;
+import com.dtteam.dynamictrees.utility.DataGenKeys;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
+import net.minecraft.tags.BlockItemTags;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
@@ -37,14 +39,14 @@ public class DTBlockTagsProvider extends BlockTagsProvider {
                 .addTag(DTBlockTags.FUNGUS_BRANCHES);
 
         this.tag(DTBlockTags.FOLIAGE)
-                .add(Blocks.SHORT_GRASS)
-                .add(Blocks.TALL_GRASS)
-                .add(Blocks.FERN)
-                .add(Blocks.LILY_PAD)
-                .add(Blocks.PINK_PETALS)
-                .add(Blocks.BROWN_MUSHROOM)
-                .add(Blocks.RED_MUSHROOM)
-                .add(Blocks.MOSS_CARPET)
+                .add(DataGenKeys.blockKey(Blocks.SHORT_GRASS))
+                .add(DataGenKeys.blockKey(Blocks.TALL_GRASS))
+                .add(DataGenKeys.blockKey(Blocks.FERN))
+                .add(DataGenKeys.blockKey(Blocks.LILY_PAD))
+                .add(DataGenKeys.blockKey(Blocks.PINK_PETALS))
+                .add(DataGenKeys.blockKey(Blocks.BROWN_MUSHROOM))
+                .add(DataGenKeys.blockKey(Blocks.RED_MUSHROOM))
+                .add(DataGenKeys.blockKey(Blocks.MOSS_CARPET))
                 .addTag(BlockTags.FLOWERS)
                 .addTag(BlockTags.REPLACEABLE_BY_TREES);
 
@@ -56,10 +58,10 @@ public class DTBlockTagsProvider extends BlockTagsProvider {
                 .addTag(DTBlockTags.FUNGUS_CAPS);
 
         this.tag(BlockTags.FLOWER_POTS)
-                .add(DTRegistries.POTTED_SAPLING.get());
+                .add(DataGenKeys.blockKey(DTRegistries.POTTED_SAPLING.get()));
 
         Species.REGISTRY.get(DynamicTrees.WARPED).getSapling().ifPresent(sapling ->
-                this.tag(BlockTags.HOGLIN_REPELLENTS).add(sapling));
+                this.tag(BlockTags.HOGLIN_REPELLENTS).add(DataGenKeys.blockKey(sapling)));
 
         this.tag(BlockTags.LEAVES)
                 .addTag(DTBlockTags.LEAVES);
@@ -67,11 +69,11 @@ public class DTBlockTagsProvider extends BlockTagsProvider {
         this.tag(BlockTags.LOGS)
                 .addTag(DTBlockTags.BRANCHES);
 
-        this.tag(BlockTags.LOGS_THAT_BURN)
+        this.tag(BlockItemTags.LOGS_THAT_BURN.block())
                 .addTag(DTBlockTags.BRANCHES_THAT_BURN)
                 .addTag(DTBlockTags.STRIPPED_BRANCHES_THAT_BURN);
 
-        this.tag(BlockTags.SAPLINGS)
+        this.tag(BlockItemTags.SAPLINGS.block())
                 .addTag(DTBlockTags.SAPLINGS);
 
         this.tag(BlockTags.WART_BLOCKS)

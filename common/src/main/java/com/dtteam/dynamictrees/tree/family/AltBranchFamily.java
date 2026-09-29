@@ -1,4 +1,5 @@
 package com.dtteam.dynamictrees.tree.family;
+import com.dtteam.dynamictrees.utility.DataGenKeys;
 
 import com.dtteam.dynamictrees.DynamicTrees;
 import com.dtteam.dynamictrees.api.registry.TypedRegistry;
@@ -110,15 +111,15 @@ public class AltBranchFamily extends Family {
         super.addBranchTextures(textureConsumer, primitiveLogLocation, sourceBlock);
     }
 
-    public void addGeneratedBlockTags (Function<TagKey<Block>, TagAppender<Block, Block>> tagAppender){
+    public void addGeneratedBlockTags (Function<TagKey<Block>, TagAppender<Block>> tagAppender){
         super.addGeneratedBlockTags(tagAppender);
         getAltBranch().ifPresent(branch -> {
-            tierTag(getDefaultBranchHarvestTier(), tagAppender).ifPresent(tagBuilder -> tagBuilder.add(branch));
+            tierTag(getDefaultBranchHarvestTier(), tagAppender).ifPresent(tagBuilder -> tagBuilder.add(DataGenKeys.blockKey(branch)));
             defaultBranchTags().forEach(tag -> {
                 if (!isOnlyIfLoaded()) {
-                    tagAppender.apply(tag).add(branch);
+                    tagAppender.apply(tag).add(DataGenKeys.blockKey(branch));
                 } else {
-                    tagAppender.apply(tag).addOptional(branch);
+                    tagAppender.apply(tag).addOptional(DataGenKeys.blockKey(branch));
                 }
             });
         });

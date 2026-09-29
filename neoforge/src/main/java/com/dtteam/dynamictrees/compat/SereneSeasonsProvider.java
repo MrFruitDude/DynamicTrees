@@ -4,7 +4,7 @@ import com.dtteam.dynamictrees.DynamicTrees;
 import com.dtteam.dynamictrees.api.season.SeasonProvider;
 import com.dtteam.dynamictrees.systems.season.*;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Tuple;
+import com.dtteam.dynamictrees.utility.Tuple;
 import net.minecraft.world.level.Level;
 import sereneseasons.api.season.Season;
 import sereneseasons.init.ModConfig;

@@ -1,4 +1,5 @@
 package com.dtteam.dynamictrees.tree.family;
+import com.dtteam.dynamictrees.utility.DataGenKeys;
 
 import com.dtteam.dynamictrees.DynamicTrees;
 import com.dtteam.dynamictrees.api.registry.RegistryEntry;
@@ -715,33 +716,33 @@ public class Family extends RegistryEntry<Family> implements Resettable<Family> 
                 Collections.singletonList(DTBlockTags.STRIPPED_BRANCHES_THAT_BURN);
     }
 
-    public void addGeneratedBlockTags (Function<TagKey<Block>, TagAppender<Block, Block>> tagAppender){
+    public void addGeneratedBlockTags (Function<TagKey<Block>, TagAppender<Block>> tagAppender){
         getBranch().ifPresent(branch -> {
-            tierTag(getDefaultBranchHarvestTier(), tagAppender).ifPresent(tagBuilder -> tagBuilder.add(branch));
+            tierTag(getDefaultBranchHarvestTier(), tagAppender).ifPresent(tagBuilder -> tagBuilder.add(DataGenKeys.blockKey(branch)));
             defaultBranchTags().forEach(tag -> {
                 if (!isOnlyIfLoaded()) {
-                    tagAppender.apply(tag).add(branch);
+                    tagAppender.apply(tag).add(DataGenKeys.blockKey(branch));
                 } else {
-                    tagAppender.apply(tag).addOptional(branch);
+                    tagAppender.apply(tag).addOptional(DataGenKeys.blockKey(branch));
                 }
             });
         });
 
         // Create stripped branch tag and harvest tag if the family has a stripped branch.
         getStrippedBranch().ifPresent(strippedBranch -> {
-            tierTag(getDefaultStrippedBranchHarvestTier(), tagAppender).ifPresent(tagBuilder -> tagBuilder.add(strippedBranch));
+            tierTag(getDefaultStrippedBranchHarvestTier(), tagAppender).ifPresent(tagBuilder -> tagBuilder.add(DataGenKeys.blockKey(strippedBranch)));
             defaultStrippedBranchTags().forEach(tag ->
             {
                 if (!isOnlyIfLoaded()) {
-                    tagAppender.apply(tag).add(strippedBranch);
+                    tagAppender.apply(tag).add(DataGenKeys.blockKey(strippedBranch));
                 } else {
-                    tagAppender.apply(tag).addOptional(strippedBranch);
+                    tagAppender.apply(tag).addOptional(DataGenKeys.blockKey(strippedBranch));
                 }
             });
         });
     }
 
-    protected Optional<TagAppender<Block, Block>> tierTag(@Nullable ToolMaterial tier, Function<TagKey<Block>, TagAppender<Block, Block>> tagAppender) {
+    protected Optional<TagAppender<Block>> tierTag(@Nullable ToolMaterial tier, Function<TagKey<Block>, TagAppender<Block>> tagAppender) {
         if (tier == null)
             return Optional.empty();
 
@@ -750,12 +751,12 @@ public class Family extends RegistryEntry<Family> implements Resettable<Family> 
         return Optional.of(tagAppender.apply(tag));
     }
 
-    public void addGeneratedItemTags (Function<TagKey<Item>, TagAppender<Item, Item>> tagAppender){
+    public void addGeneratedItemTags (Function<TagKey<Item>, TagAppender<Item>> tagAppender){
         getBranchItem().ifPresent(item -> {
                     if (!isOnlyIfLoaded()) {
-                        defaultBranchItemTags().forEach(tag -> tagAppender.apply(tag).add(item));
+                        defaultBranchItemTags().forEach(tag -> tagAppender.apply(tag).add(DataGenKeys.itemKey(item)));
                     } else {
-                        defaultBranchItemTags().forEach(tag -> tagAppender.apply(tag).addOptional(item));
+                        defaultBranchItemTags().forEach(tag -> tagAppender.apply(tag).addOptional(DataGenKeys.itemKey(item)));
                     }
                 }
         );

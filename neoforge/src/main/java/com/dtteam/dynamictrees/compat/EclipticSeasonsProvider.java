@@ -7,7 +7,7 @@ import com.teamtea.eclipticseasons.common.core.SolarHolders;
 import com.teamtea.eclipticseasons.common.core.solar.SolarDataManager;
 import com.teamtea.eclipticseasons.config.CommonConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Tuple;
+import com.dtteam.dynamictrees.utility.Tuple;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
