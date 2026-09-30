@@ -62,6 +62,9 @@ public class DynamicTrees {
     // code that gets invoked by the entry point of the loader specific projects.
     public static void init() {
         SeasonCompatibilityHandler.registerBuiltInSeasonManagers();
+        // MC 26.3: loot parameter sets are CONTEXT_KEY_SET registry entries, so they must be queued with the deferred
+        // register during mod construction; common setup runs after the RegisterEvent and the queue is closed then.
+        DTLoot.load();
     }
 
     private static final List<Runnable> SETUP_HANDLERS = new ArrayList<>();
@@ -71,7 +74,6 @@ public class DynamicTrees {
     }
 
     public static void commonSetup() {
-        DTLoot.load();
         DynamicTreeFeature.setup();
 
         // Clears and locks registry handlers to free them from memory.
