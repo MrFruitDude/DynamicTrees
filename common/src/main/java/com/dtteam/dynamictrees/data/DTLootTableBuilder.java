@@ -1,5 +1,6 @@
 package com.dtteam.dynamictrees.data;
 
+import net.minecraft.core.Holder;
 import com.dtteam.dynamictrees.loot.DTLootParameterSets;
 import com.dtteam.dynamictrees.loot.condition.SeasonalSeedDropChance;
 import com.dtteam.dynamictrees.loot.condition.VoluntarySeedDropChance;
@@ -19,21 +20,20 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.storage.loot.IntRange;
+import net.minecraft.world.level.storage.loot.IntLimit;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.entries.UniformContainerBase;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.ApplyExplosionDecay;
 import net.minecraft.world.level.storage.loot.functions.LimitCount;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.*;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProvider;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class DTLootTableBuilder {
     }
 
     protected static LootTable.Builder createSelfDropDispatchTable(Block block, LootItemCondition.Builder conditionBuilder, LootPoolEntryContainer.Builder<?> alternativeBuilder) {
-        return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F)).add(LootItem.lootTableItem(block).when(conditionBuilder).otherwise(alternativeBuilder)));
+        return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(LootItem.lootTableItem(block).when(conditionBuilder).otherwise(alternativeBuilder)));
     }
 
     public static LootTable.Builder createLeavesBlockDrops(Block primitiveLeavesBlock, float[] seedChances, Item stickItem, HolderLookup.Provider registries) {
@@ -74,10 +74,10 @@ public class DTLootTableBuilder {
                         .when(BonusLevelTableCondition.bonusLevelFlatChance(ItemUtils.getEnchantment(Enchantments.FORTUNE, registries), seedChances))
                         .when(SeasonalSeedDropChance.seasonalSeedDropChance())
         ).withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).when(hasNoShearsOrSilkTouch(registries))
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).when(hasNoShearsOrSilkTouch(registries))
                         .add(LootItem.lootTableItem(stickItem)
                                 .apply(SetItemCountFunction.setCount(
-                                        UniformGenerator.between(1.0F, 2.0F)
+                                        ContextIntProviders.between(1, 2)
                                 ))
                                 .apply(ApplyExplosionDecay.explosionDecay())
                                 .when(BonusLevelTableCondition.bonusLevelFlatChance(ItemUtils.getEnchantment(Enchantments.FORTUNE, registries), 0.02F,
@@ -98,7 +98,7 @@ public class DTLootTableBuilder {
 
     public static LootTable.Builder createWartBlockDrops(Block primitiveWartBlock, HolderLookup.Provider registries) {
         return LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1))
                         .add(LootItem.lootTableItem(primitiveWartBlock))
                         .when(ExplosionCondition.survivesExplosion())
         );
@@ -109,17 +109,17 @@ public class DTLootTableBuilder {
     }
     public static LootTable.Builder createLeavesDrops(float[] seedChances, ContextKeySet parameterSet, Item stickItem, HolderLookup.Provider registries) {
         return LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
                         SeedItemLootPoolEntry.lootTableSeedItem()
                                 .when(ExplosionCondition.survivesExplosion())
                                 .when(BonusLevelTableCondition.bonusLevelFlatChance(ItemUtils.getEnchantment(Enchantments.FORTUNE, registries), seedChances))
                                 .when(SeasonalSeedDropChance.seasonalSeedDropChance())
                 )
         ).withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
                         LootItem.lootTableItem(Items.STICK)
                                 .apply(SetItemCountFunction.setCount(
-                                        UniformGenerator.between(1.0F, 2.0F)
+                                        ContextIntProviders.between(1, 2)
                                 ))
                                 .apply(ApplyExplosionDecay.explosionDecay())
                                 .when(BonusLevelTableCondition.bonusLevelFlatChance(
@@ -131,7 +131,7 @@ public class DTLootTableBuilder {
 
     public static LootTable.Builder createPalmLeavesDrops(float[] seedChances, ContextKeySet parameterSet, HolderLookup.Provider registries) {
         return LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
                         SeedItemLootPoolEntry.lootTableSeedItem()
                                 .when(ExplosionCondition.survivesExplosion())
                                 .when(BonusLevelTableCondition.bonusLevelFlatChance(ItemUtils.getEnchantment(Enchantments.FORTUNE, registries), seedChances))
@@ -142,7 +142,7 @@ public class DTLootTableBuilder {
 
     public static LootTable.Builder createWartDrops(Block primitiveWartBlock, HolderLookup.Provider registries) {
         return LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1))
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1))
                         .add(LootItem.lootTableItem(primitiveWartBlock))
                         .when(ExplosionCondition.survivesExplosion())
                         .when(BonusLevelTableCondition.bonusLevelFlatChance(
@@ -153,7 +153,7 @@ public class DTLootTableBuilder {
 
     public static LootTable.Builder createVoluntaryDrops(Item seedItem, HolderLookup.Provider registries) {
         return LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
                         LootItem.lootTableItem(seedItem)
                                 .when(VoluntarySeedDropChance.voluntarySeedDropChance())
                 )
@@ -162,13 +162,13 @@ public class DTLootTableBuilder {
 
     public static LootTable.Builder createBranchDrops(Block primitiveLogBlock, Item stickItem, HolderLookup.Provider registries) {
         return LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
                         LootItem.lootTableItem(primitiveLogBlock)
                                 .apply(MultiplyByLogsCount.multiplyByLogsCount())
                                 .apply(ApplyExplosionDecay.explosionDecay())
                 )
         ).withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
                         LootItem.lootTableItem(stickItem)
                                 .apply(MultiplyBySticksCount.multiplyBySticksCount())
                                 .apply(ApplyExplosionDecay.explosionDecay())
@@ -182,25 +182,24 @@ public class DTLootTableBuilder {
     public static LootTable.Builder createFruitPodDrops(Block fruitBlock, Item fruitItem, IntegerProperty ageProperty, int matureAge, int countMin, int countMax, HolderLookup.Provider registries) {
         //Select a number provider depending on the range.
         // If both numbers are the same then use a constant value, otherwise use an uniform range.
-        NumberProvider numberProvider = (countMin == countMax) ?
-                ConstantValue.exactly(countMax) :
-                UniformGenerator.between(countMin, countMax);
+        Holder<ContextIntProvider> numberProvider = (countMin == countMax) ?
+                ContextIntProviders.exactly(countMax) :
+                ContextIntProviders.between(countMin, countMax);
         //Apply the count to the item builder only if it's not just 1.
-        LootPoolSingletonContainer.Builder<?> itemBuilder = LootItem.lootTableItem(fruitItem);
+        UniformContainerBase.Builder<?> itemBuilder = LootItem.lootTableItem(fruitItem);
         if (!(countMin == countMax && countMax == 1)){
             itemBuilder.apply(SetItemCountFunction.setCount(numberProvider));
             //If the min count is negative, then cap it up to 0.
             if (countMin < 0)
-                itemBuilder.apply(LimitCount.limitCount(IntRange.lowerBound(0)));
+                itemBuilder.apply(LimitCount.limitCount(IntLimit.lowerBound(0)));
         }
         //finally, return the table builder
         return LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
                         itemBuilder
                                 .apply(ApplyExplosionDecay.explosionDecay())
-                                .when(LootItemBlockStatePropertyCondition
-                                        .hasBlockStateProperties(fruitBlock)
-                                        .setProperties(StatePropertiesPredicate.Builder.properties()
+                                .when(MatchBlock.blockMatches(registries.lookupOrThrow(Registries.BLOCK), fruitBlock,
+                                        StatePropertiesPredicate.Builder.properties()
                                                 .hasProperty(ageProperty, matureAge))
                                 )
                 )
@@ -212,9 +211,9 @@ public class DTLootTableBuilder {
                 primitiveLogBlock,
                 hasSilkTouch(registries),
                 LootItem.lootTableItem(resinItem)
-                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(maxResin, minResin)))
+                        .apply(SetItemCountFunction.setCount(ContextIntProviders.between(maxResin, minResin)))
                         .apply(ApplyBonusCount.addUniformBonusCount(ItemUtils.getEnchantment(Enchantments.FORTUNE, registries)))
-                        .apply(LimitCount.limitCount(IntRange.upperBound(9)))
+                        .apply(LimitCount.limitCount(IntLimit.upperBound(9)))
                         .apply(MultiplyByTotalVolume.multiplyByTotalVolume())
                         .apply(ApplyExplosionDecay.explosionDecay()))
                 .setParamSet(DTLootParameterSets.BRANCHES);
@@ -222,19 +221,19 @@ public class DTLootTableBuilder {
 
     public static LootTable.Builder createResinBranchDrops(Block primitiveLogBlock, Item stickItem, Item resinItem, int minResin, int maxResin,  HolderLookup.Provider registries) {
         return LootTable.lootTable().withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
                         LootItem.lootTableItem(primitiveLogBlock)
                                 .apply(MultiplyByLogsCount.multiplyByLogsCount())
                                 .apply(ApplyExplosionDecay.explosionDecay())
                 )
         ).withPool(
-                LootPool.lootPool().setRolls(UniformGenerator.between(maxResin, minResin)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.between(maxResin, minResin)).add(
                         LootItem.lootTableItem(resinItem)
                                 .apply(MultiplyByTotalVolume.multiplyByTotalVolume())
                                 .apply(ApplyExplosionDecay.explosionDecay())
                 )
         ).withPool(
-                LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(
+                LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(
                         LootItem.lootTableItem(stickItem)
                                 .apply(MultiplyBySticksCount.multiplyBySticksCount())
                                 .apply(ApplyExplosionDecay.explosionDecay())

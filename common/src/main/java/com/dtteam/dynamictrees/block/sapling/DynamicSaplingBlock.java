@@ -1,5 +1,6 @@
 package com.dtteam.dynamictrees.block.sapling;
 
+import net.minecraft.world.level.block.BonemealSource;
 import com.dtteam.dynamictrees.config.DTConfigs;
 import com.dtteam.dynamictrees.tree.TreeHelper;
 import com.dtteam.dynamictrees.tree.species.Species;
@@ -47,7 +48,7 @@ public class DynamicSaplingBlock extends Block implements BonemealableBlock {
         super(Properties.of()
                 .mapColor(MapColor.PLANT)
                 .noCollision()
-                .pushReaction(PushReaction.DESTROY)
+                .pushReaction(PushReaction.POPPED)
                 .instabreak()
                 .sound(SoundType.GRASS)
                 .randomTicks()
@@ -83,7 +84,7 @@ public class DynamicSaplingBlock extends Block implements BonemealableBlock {
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (this.getSpecies().canSaplingGrowNaturally(level, pos)) {
-            this.performBonemeal(level, random, pos, state);
+            this.performBonemeal(level, pos, state);
         }
     }
 
@@ -107,17 +108,17 @@ public class DynamicSaplingBlock extends Block implements BonemealableBlock {
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
+    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState, BonemealSource source) {
         return this.getSpecies().canSaplingConsumeBoneMeal(levelReader, blockPos);
     }
 
     @Override
-    public boolean isBonemealSuccess(@NotNull Level level, @NotNull RandomSource rand, @NotNull BlockPos pos, @NotNull BlockState state) {
+    public boolean isBonemealSuccess(@NotNull Level level, @NotNull RandomSource rand, @NotNull BlockPos pos, @NotNull BlockState state, BonemealSource source) {
         return this.getSpecies().canSaplingGrowAfterBoneMeal(level, rand, pos);
     }
 
     @Override
-    public void performBonemeal(@NotNull ServerLevel level, @NotNull RandomSource rand, @NotNull BlockPos pos, @NotNull BlockState state) {
+    public void performBonemeal(@NotNull ServerLevel level, @NotNull RandomSource rand, @NotNull BlockPos pos, @NotNull BlockState state, BonemealSource source) {
         performBonemeal(level, pos, state);
     }
 

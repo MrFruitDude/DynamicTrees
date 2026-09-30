@@ -4,7 +4,7 @@ import com.dtteam.dynamictrees.DynamicTrees;
 import com.dtteam.dynamictrees.api.registry.RegistryEntry;
 import com.dtteam.dynamictrees.api.registry.SimpleRegistry;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import net.minecraft.world.level.levelgen.feature.Feature;
 
 /**
  * @author Harley O'Connor
@@ -13,7 +13,7 @@ public abstract class FeatureCanceller extends RegistryEntry<FeatureCanceller> {
 
     public static final FeatureCanceller NULL_CANCELLER = new FeatureCanceller(DynamicTrees.NULL) {
         @Override
-        public boolean shouldCancel(ConfiguredFeature<?, ?> configuredFeature, BiomePropertySelectors.NormalFeatureCancellation featureCancellations) {
+        public boolean shouldCancel(Feature configuredFeature, BiomePropertySelectors.NormalFeatureCancellation featureCancellations) {
             return false;
         }
     };
@@ -36,6 +36,6 @@ public abstract class FeatureCanceller extends RegistryEntry<FeatureCanceller> {
      * @param featureCancellations The tree canceller object.
      * @return True if feature should be cancelled, false if not.
      */
-    public abstract boolean shouldCancel(ConfiguredFeature<?, ?> configuredFeature, BiomePropertySelectors.NormalFeatureCancellation featureCancellations);
+    public abstract boolean shouldCancel(Feature configuredFeature, BiomePropertySelectors.NormalFeatureCancellation featureCancellations);
 
 }

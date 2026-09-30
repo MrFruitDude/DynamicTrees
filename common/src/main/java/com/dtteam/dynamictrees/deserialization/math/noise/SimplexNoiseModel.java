@@ -13,7 +13,7 @@ public class SimplexNoiseModel implements NoiseModel {
 	
 	@Override
 	public double sample(double x, double y, double z) {
-		return noise.getValue(x, y, z);
+		return noise.get(x, y, z);
 	}
 
 }

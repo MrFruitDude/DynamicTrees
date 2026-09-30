@@ -1,5 +1,7 @@
 package com.dtteam.dynamictrees.systems.nodemapper;
 
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
 import com.dtteam.dynamictrees.block.branch.BranchBlock;
 import com.dtteam.dynamictrees.platform.Services;
 import com.dtteam.dynamictrees.systems.BranchConnectables;
@@ -40,7 +42,9 @@ public class DestroyerNode extends FindEndsNode {
             if (player != null && accessor instanceof Level level) {
                 BlockEntity te = accessor.getBlockEntity(pos);
                 Services.INTERACTION.blockDestroyByPlayer(state, level, pos, player, false, level.getFluidState(pos));
-                state.getBlock().playerDestroy(level, player, pos, state, te, player.getMainHandItem());
+                if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
+                    state.getBlock().playerDestroy(serverLevel, serverPlayer, pos, state, te, player.getMainHandItem());
+                }
             } else accessor.setBlock(pos, Blocks.AIR.defaultBlockState(), 0);
         }
 

@@ -5,6 +5,8 @@ import com.dtteam.dynamictrees.data.provider.*;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.RegistrySetBuilder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -12,6 +14,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -39,7 +42,7 @@ public final class GatherDataHelper {
     public static void gatherTagData(final String modId, final GatherDataEvent.Client event) {
         final DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getReloadableLookupProvider();
 
         final DTBlockTagsProvider blockTagsProvider = new DTBlockTagsProvider(packOutput, lookupProvider, modId);
         final DTItemTagsProvider itemTagsProvider = new DTItemTagsProvider(packOutput, lookupProvider, modId);
@@ -50,14 +53,16 @@ public final class GatherDataHelper {
 
     public static void gatherSpriteAndModelData(final String modId, final GatherDataEvent.Client event, Registry<?>... registries) {
         event.getGenerator().addProvider(true,
-                new DTSpriteSourceProvider(event.getGenerator().getPackOutput(), event.getLookupProvider(), modId, registries));
+                new DTSpriteSourceProvider(event.getGenerator().getPackOutput(), event.getWorldLookupProvider(), modId, registries));
         event.getGenerator().addProvider(true,
                 new DTModelProvider(event.getGenerator().getPackOutput(), modId, Arrays.asList(registries)));
     }
 
     public static void gatherLootData(final String modId, final GatherDataEvent.Client event) {
-        event.getGenerator().addProvider(true,
-                new DTLootTableProvider(event.getGenerator().getPackOutput(), modId, event.getLookupProvider()));
+        // MC 26.3: loot tables are reloadable registry entries generated through a RegistrySetBuilder.
+        event.createReloadableRegistryObjects(
+                new RegistrySetBuilder().add(Registries.LOOT_TABLE, new DTLootTableProvider(modId, event.getWorldLookupProvider())),
+                Set.of(modId), "Dynamic Trees Loot Tables (" + modId + ")");
     }
 
     public static void gatherLangData(final String modId, final GatherDataEvent.Client event, Registry<?>... registries){

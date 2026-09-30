@@ -1,5 +1,7 @@
 package com.dtteam.dynamictrees.loot.function;
 
+import net.minecraft.core.Holder;
+import java.util.Optional;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -23,7 +25,7 @@ public final class MultiplyCount extends LootItemConditionalFunction {
 
     private final float multiplier;
 
-    public MultiplyCount(List<LootItemCondition> conditions, float multiplier) {
+    public MultiplyCount(Optional<Holder<LootItemCondition>> conditions, float multiplier) {
         super(conditions);
         this.multiplier = multiplier;
     }
@@ -40,7 +42,7 @@ public final class MultiplyCount extends LootItemConditionalFunction {
     }
 
     public static LootItemFunction.Builder multiplyCount() {
-        return () -> new MultiplyCount(List.of(), 1.0F);
+        return () -> new MultiplyCount(Optional.empty(), 1.0F);
     }
 
 }

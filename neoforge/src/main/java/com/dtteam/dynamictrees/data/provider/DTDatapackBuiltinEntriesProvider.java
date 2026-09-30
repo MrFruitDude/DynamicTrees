@@ -3,7 +3,9 @@ package com.dtteam.dynamictrees.data.provider;
 import com.dtteam.dynamictrees.DynamicTrees;
 import com.dtteam.dynamictrees.registry.DTRegistries;
 import com.dtteam.dynamictrees.tree.species.Species;
+import com.dtteam.dynamictrees.worldgen.feature.CaveRootedTreeFeature;
 import com.dtteam.dynamictrees.worldgen.feature.CaveRootedTreePlacement;
+import com.dtteam.dynamictrees.worldgen.feature.DynamicTreeFeature;
 import com.dtteam.dynamictrees.worldgen.feature.DTReplaceNyliumFungiBlockStateProvider;
 import com.dtteam.dynamictrees.worldgen.structure.VillageTreeReplacement;
 import net.minecraft.core.*;
@@ -20,18 +22,17 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicate;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.NetherForestVegetationConfig;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.levelgen.feature.SimpleBlockFeature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
 import net.minecraft.world.level.levelgen.feature.stateproviders.WeightedStateProvider;
 import net.minecraft.world.level.levelgen.placement.BiomeFilter;
 import net.minecraft.world.level.levelgen.placement.EnvironmentScanPlacement;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.minecraft.world.level.levelgen.placement.RandomOffsetPlacement;
+import net.minecraft.world.level.levelgen.placement.OffsetPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
+import net.neoforged.neoforge.registries.DataPackRegistriesHooks;
 
 import java.util.List;
 import java.util.Set;
@@ -40,7 +41,9 @@ import java.util.concurrent.CompletableFuture;
 public class DTDatapackBuiltinEntriesProvider extends DatapackBuiltinEntriesProvider {
 
     public DTDatapackBuiltinEntriesProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries, Set<String> modIds) {
-        super(output, registries.thenApply(p -> constructRegistries(p, getBuilder(p))), modIds);
+        // MC 26.3: the provider takes a name and the registry data it writes (world layer).
+        super(output, "Dynamic Trees Datapack Builtin Entries", DataPackRegistriesHooks.getWorldRegistriesWithDimensions().toList(),
+                registries.thenApply(p -> constructRegistries(p, getBuilder(p))), modIds);
     }
 
     private static RegistrySetBuilder.PatchedRegistries constructRegistries(HolderLookup.Provider original, RegistrySetBuilder datapackEntriesBuilder) {
@@ -52,7 +55,7 @@ public class DTDatapackBuiltinEntriesProvider extends DatapackBuiltinEntriesProv
     private static RegistrySetBuilder getBuilder(HolderLookup.Provider vanillaProvider) {
         return new RegistrySetBuilder()
                 .add(Registries.TEMPLATE_POOL, context -> bootstrapTemplatePools(vanillaProvider, context))
-                .add(Registries.CONFIGURED_FEATURE, context -> bootstrapConfiguredFeatures(vanillaProvider, context))
+                .add(Registries.FEATURE, context -> bootstrapConfiguredFeatures(vanillaProvider, context))
                 .add(Registries.PLACED_FEATURE, DTDatapackBuiltinEntriesProvider::bootstrapPlacedFeatures);
     }
 
@@ -61,18 +64,17 @@ public class DTDatapackBuiltinEntriesProvider extends DatapackBuiltinEntriesProv
         VillageTreeReplacement.replaceTreesFromVanillaVillages(vanillaProvider, context);
     }
 
-    private static void bootstrapConfiguredFeatures(HolderLookup.Provider vanillaProvider, BootstrapContext<ConfiguredFeature<?, ?>> context) {
-        context.register(DTRegistries.DYNAMIC_TREE_CONFIGURED_FEATURE,
-                new ConfiguredFeature<>(DTRegistries.DYNAMIC_TREE_FEATURE.get(), NoneFeatureConfiguration.INSTANCE));
-        context.register(DTRegistries.CAVE_ROOTED_TREE_CONFIGURED_FEATURE,
-                new ConfiguredFeature<>(DTRegistries.CAVE_ROOTED_TREE_FEATURE.get(), NoneFeatureConfiguration.INSTANCE));
+    private static void bootstrapConfiguredFeatures(HolderLookup.Provider vanillaProvider, BootstrapContext<Feature> context) {
+        // MC 26.3: configured features are merged into Feature; the feature instance is the registry value.
+        context.register(DTRegistries.DYNAMIC_TREE_CONFIGURED_FEATURE, new DynamicTreeFeature());
+        context.register(DTRegistries.CAVE_ROOTED_TREE_CONFIGURED_FEATURE, new CaveRootedTreeFeature());
 
         // TODO 1.20: Verify this works
         replaceNyliumFungiFeatures(vanillaProvider, context);
     }
 
     private static void bootstrapPlacedFeatures(BootstrapContext<PlacedFeature> context) {
-        var configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
+        var configuredFeatures = context.lookup(Registries.FEATURE);
 
         context.register(DTRegistries.DYNAMIC_TREE_PLACED_FEATURE,
                 new PlacedFeature(configuredFeatures.getOrThrow(DTRegistries.DYNAMIC_TREE_CONFIGURED_FEATURE), List.of()));
@@ -80,28 +82,30 @@ public class DTDatapackBuiltinEntriesProvider extends DatapackBuiltinEntriesProv
                 new PlacedFeature(configuredFeatures.getOrThrow(DTRegistries.CAVE_ROOTED_TREE_CONFIGURED_FEATURE), List.of(
                         CaveRootedTreePlacement.INSTANCE, PlacementUtils.RANGE_BOTTOM_TO_MAX_TERRAIN_HEIGHT,
                         EnvironmentScanPlacement.scanningFor(Direction.UP, BlockPredicate.solid(), BlockPredicate.ONLY_IN_AIR_PREDICATE, 12),
-                        RandomOffsetPlacement.vertical(ConstantInt.of(-1)), BiomeFilter.biome())));
+                        OffsetPlacement.vertical(ConstantInt.of(-1)), BiomeFilter.biome())));
     }
 
-    private static void replaceNyliumFungiFeatures(HolderLookup.Provider vanillaProvider, BootstrapContext<ConfiguredFeature<?, ?>> context) {
+    private static void replaceNyliumFungiFeatures(HolderLookup.Provider vanillaProvider, BootstrapContext<Feature> context) {
         Species.findSpecies(DynamicTrees.CRIMSON).getSapling().ifPresent(crimsonSapling ->
                 Species.findSpecies(DynamicTrees.WARPED).getSapling().ifPresent(warpedSapling -> {
-                    var configuredFeatures = vanillaProvider.lookup(Registries.CONFIGURED_FEATURE).orElseThrow();
-                    List.of(NetherFeatures.CRIMSON_FOREST_VEGETATION, NetherFeatures.CRIMSON_FOREST_VEGETATION_BONEMEAL,
-                                    NetherFeatures.WARPED_FOREST_VEGETION, NetherFeatures.WARPED_FOREST_VEGETATION_BONEMEAL)
+                    var configuredFeatures = vanillaProvider.lookup(Registries.FEATURE).orElseThrow();
+                    // MC 26.3: the *_BONEMEAL features were removed. TODO(port26.3): vanilla's nylium_bonemeal
+                    // (NetherFeatures.NYLIUM_BONEMEAL) inlines its own copies of the vegetation, so bonemealed
+                    // nylium is not covered by this replacement any more.
+                    List.of(NetherFeatures.CRIMSON_FOREST_VEGETATION, NetherFeatures.WARPED_FOREST_VEGETION)
                             .forEach(key -> replaceFeature(context, configuredFeatures, key, crimsonSapling, warpedSapling));
                 })
         );
     }
 
-    private static void replaceFeature(BootstrapContext<ConfiguredFeature<?, ?>> context, HolderLookup.RegistryLookup<ConfiguredFeature<?, ?>> configuredFeatures,
-                                       ResourceKey<ConfiguredFeature<?, ?>> key, Block crimsonSapling, Block warpedSapling) {
+    private static void replaceFeature(BootstrapContext<Feature> context, HolderLookup.RegistryLookup<Feature> configuredFeatures,
+                                       ResourceKey<Feature> key, Block crimsonSapling, Block warpedSapling) {
         var feature = configuredFeatures.getOrThrow(key).value();
-        var config = (NetherForestVegetationConfig) feature.config();
-        var stateProvider = (WeightedStateProvider) config.stateProvider;
+        // MC 26.3: nether forest vegetation is a SimpleBlockFeature over a WeightedStateProvider.
+        var simple = (SimpleBlockFeature) feature;
+        var stateProvider = (WeightedStateProvider) simple.toPlace().value();
 
-        var newConfig = new NetherForestVegetationConfig(replaceBlockStates(stateProvider, crimsonSapling, warpedSapling), config.spreadWidth, config.spreadHeight);
-        context.register(key, new ConfiguredFeature<>(Feature.NETHER_FOREST_VEGETATION, newConfig));
+        context.register(key, new SimpleBlockFeature(Holder.direct(replaceBlockStates(stateProvider, crimsonSapling, warpedSapling)), simple.scheduleTick()));
     }
 
     private static BlockStateProvider replaceBlockStates(WeightedStateProvider stateProvider, Block crimsonSapling, Block warpedSapling) {

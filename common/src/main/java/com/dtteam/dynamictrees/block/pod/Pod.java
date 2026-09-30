@@ -187,7 +187,7 @@ public class Pod extends RegistryEntry<Pod> implements Resettable<Pod> {
         return BlockBehaviour.Properties.of()
                 .mapColor(mapColor)
                 .noCollision()
-                .pushReaction(PushReaction.DESTROY)
+                .pushReaction(PushReaction.POPPED)
                 .sound(SoundType.CROP)
                 .randomTicks()
                 .strength(0.3F);

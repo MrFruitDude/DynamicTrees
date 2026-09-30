@@ -8,6 +8,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -20,9 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
@@ -63,11 +62,14 @@ public abstract class RegistryLoader {
 
     abstract public <L extends LootItemFunction> Supplier<MapCodec<L>> registerLootFunctionType(String name, MapCodec<L> serializerFactory);
 
-    abstract public <T extends PlacementModifier> Supplier<PlacementModifierType<T>> registerPlacementModifierType(String name, Supplier<PlacementModifierType<T>> supplier);
+    abstract public <T extends PlacementModifier> Supplier<MapCodec<T>> registerPlacementModifierType(String name, MapCodec<T> codec);
 
-    abstract public <T extends Feature<?>> Supplier<T> registerFeature(String name, Supplier<T> supplier);
+    abstract public <T extends Feature> Supplier<MapCodec<T>> registerFeature(String name, MapCodec<T> codec);
 
-    abstract public <T extends BlockStateProvider> Supplier<BlockStateProviderType<T>> registerBlockStateProviderType(String name, Supplier<BlockStateProviderType<T>> supplier);
+    abstract public <T extends BlockStateProvider> Supplier<MapCodec<T>> registerBlockStateProviderType(String name, MapCodec<T> codec);
+
+    /** MC 26.3: loot context parameter sets live in the CONTEXT_KEY_SET registry. */
+    abstract public Supplier<ContextKeySet> registerContextKeySet(String name, Supplier<ContextKeySet> paramSet);
 
     abstract public <T extends StructurePoolElement> Supplier<StructurePoolElementType<T>> registerStructurePoolElementType(String name, Supplier<StructurePoolElementType<T>> supplier);
 

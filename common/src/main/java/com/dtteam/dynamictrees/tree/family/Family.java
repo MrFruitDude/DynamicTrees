@@ -294,7 +294,7 @@ public class Family extends RegistryEntry<Family> implements Resettable<Family> 
         if (this.hasStrippedBranch() && state.getBlock() instanceof BranchBlock branch) {
             branch.stripBranchAndDamageAxe(state, level, pos, player, heldItem);
             if (level.isClientSide()) {
-                level.playSound(player, pos, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0F, 1.0F);
+                level.playSound(player, pos, SoundEvents.AXE_STRIP.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
                 WailaHelper.invalidateWailaPosition();
             }
             return this.getBranch().isPresent();

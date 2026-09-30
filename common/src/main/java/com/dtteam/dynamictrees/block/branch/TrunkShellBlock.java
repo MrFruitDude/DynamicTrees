@@ -1,5 +1,6 @@
 package com.dtteam.dynamictrees.block.branch;
 
+import net.minecraft.server.level.ServerPlayer;
 import com.dtteam.dynamictrees.block.BlockWithDynamicHardness;
 import com.dtteam.dynamictrees.platform.Services;
 import com.dtteam.dynamictrees.tree.ChunkTreeHelper;
@@ -60,7 +61,7 @@ public class TrunkShellBlock extends BlockWithDynamicHardness implements SimpleW
     public TrunkShellBlock(Identifier id) {
         super(Properties.of()
                 .ignitedByLava()
-                .pushReaction(PushReaction.BLOCK)
+                .pushReaction(PushReaction.IMMOVEABLE)
                 .sound(SoundType.WOOD)
                 .explosionResistance(3.0F)
                 .noOcclusion()
@@ -133,7 +134,7 @@ public class TrunkShellBlock extends BlockWithDynamicHardness implements SimpleW
     }
 
     @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+    public void playerDestroy(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
     }
 
     @Override

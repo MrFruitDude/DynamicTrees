@@ -9,6 +9,7 @@ import com.dtteam.dynamictrees.worldgen.BiomeDatabase;
 import com.dtteam.dynamictrees.worldgen.featurecancellation.FeatureCancellationRegistry;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
@@ -23,7 +24,7 @@ public class RunFeatureCancellersBiomeModifier implements BiomeModifier {
             DynamicTrees.location("feature_canceller_exclusions"));
 
     @Override
-    public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
+    public void modify(RegistryAccess registries, Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
         if (phase == Phase.REMOVE && DTConfigs.SERVER.worldGen.get()) {
             ResourceKey<Biome> biomeKey = biome.unwrapKey().orElseThrow();
             BiomeGenerationSettingsBuilder generationSettings = builder.getGenerationSettings();

@@ -1,7 +1,6 @@
 package com.dtteam.dynamictrees.worldgen.feature;
 
 import com.dtteam.dynamictrees.api.worldgen.LevelContext;
-import com.dtteam.dynamictrees.registry.DTRegistries;
 import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -11,11 +10,10 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
-import java.util.stream.Stream;
+import java.util.function.Consumer;
 
-public class CaveRootedTreePlacement extends PlacementModifier {
+public class CaveRootedTreePlacement implements PlacementModifier {
     public static final CaveRootedTreePlacement INSTANCE = new CaveRootedTreePlacement(Unit.INSTANCE);
     public static final MapCodec<CaveRootedTreePlacement> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance
@@ -26,14 +24,13 @@ public class CaveRootedTreePlacement extends PlacementModifier {
     }
 
     @Override
-    public Stream<BlockPos> getPositions(PlacementContext context, RandomSource random, BlockPos pos) {
-        return DynamicTreeFeature.DISC_PROVIDER.getPoissonDiscs(LevelContext.create(context.getLevel()), ChunkPos.containing(pos))
-                .stream()
-                .map(disc -> new BlockPos(disc.x, 0, disc.z));
+    public void modify(PlacementContext context, RandomSource random, BlockPos pos, Consumer<BlockPos> output) {
+        DynamicTreeFeature.DISC_PROVIDER.getPoissonDiscs(LevelContext.create(context.getLevel()), ChunkPos.containing(pos))
+                .forEach(disc -> output.accept(new BlockPos(disc.x, 0, disc.z)));
     }
 
     @Override
-    public PlacementModifierType<?> type() {
-        return DTRegistries.CAVE_ROOTED_TREE_PLACEMENT_MODIFIER_TYPE.get();
+    public MapCodec<? extends PlacementModifier> codec() {
+        return CODEC;
     }
 }

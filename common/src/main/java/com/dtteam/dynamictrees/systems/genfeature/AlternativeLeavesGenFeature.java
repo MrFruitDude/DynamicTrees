@@ -121,7 +121,7 @@ public class AlternativeLeavesGenFeature extends GenFeature {
             boolean isSet = false;
             List<BlockPos> posList = new LinkedList<>();
             for (BlockPos leafPosition : leafPositions) {
-                posList.add(new BlockPos(leafPosition));
+                posList.add(leafPosition.immutable());
             }
             if (posList.isEmpty()) {
                 return false;

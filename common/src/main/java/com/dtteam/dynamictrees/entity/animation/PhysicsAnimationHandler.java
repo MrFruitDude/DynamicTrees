@@ -166,8 +166,8 @@ public class PhysicsAnimationHandler implements AnimationHandler {
 
         final Vec3 mc = entity.getMassCenter();
         poseStack.translate(mc.x, mc.y, mc.z);
-        poseStack.mulPose(Axis.YN.rotationDegrees(yaw));
-        poseStack.mulPose(Axis.XP.rotationDegrees(pit));
+        poseStack.rotate(Axis.YN.rotationDegrees(yaw));
+        poseStack.rotate(Axis.XP.rotationDegrees(pit));
         poseStack.translate(-mc.x - 0.5, -mc.y, -mc.z - 0.5);
     }
 

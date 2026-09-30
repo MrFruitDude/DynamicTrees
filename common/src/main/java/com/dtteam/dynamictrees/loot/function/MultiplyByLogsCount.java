@@ -1,5 +1,7 @@
 package com.dtteam.dynamictrees.loot.function;
 
+import net.minecraft.core.Holder;
+import java.util.Optional;
 import com.dtteam.dynamictrees.loot.DTLootContextParams;
 import com.dtteam.dynamictrees.systems.nodemapper.NetVolumeNode;
 import com.mojang.serialization.MapCodec;
@@ -21,7 +23,7 @@ public final class MultiplyByLogsCount extends LootItemConditionalFunction {
             instance -> commonFields(instance)
                     .apply(instance, MultiplyByLogsCount::new));
 
-    public MultiplyByLogsCount(List<LootItemCondition> conditions) {
+    public MultiplyByLogsCount(Optional<Holder<LootItemCondition>> conditions) {
         super(conditions);
     }
 
@@ -32,14 +34,14 @@ public final class MultiplyByLogsCount extends LootItemConditionalFunction {
 
     @Override
     protected ItemStack run(ItemStack stack, LootContext context) {
-        final Integer volume = context.getOptionalParameter(DTLootContextParams.VOLUME);
+        final Integer volume = context.getOptional(DTLootContextParams.VOLUME);
         assert volume != null;
         stack.setCount(stack.getCount() * (int) Math.floor((float) volume / NetVolumeNode.Volume.VOXELSPERLOG));
         return stack;
     }
 
     public static LootItemFunction.Builder multiplyByLogsCount() {
-        return () -> new MultiplyByLogsCount(List.of());
+        return () -> new MultiplyByLogsCount(Optional.empty());
     }
 
 }

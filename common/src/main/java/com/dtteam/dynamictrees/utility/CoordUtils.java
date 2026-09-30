@@ -66,7 +66,7 @@ public final class CoordUtils {
         }
 
         public BlockPos getOffsetPos() {
-            return new BlockPos(offset);
+            return new BlockPos(offset.getX(), offset.getY(), offset.getZ());
         }
 
         public Surround getOpposite() {

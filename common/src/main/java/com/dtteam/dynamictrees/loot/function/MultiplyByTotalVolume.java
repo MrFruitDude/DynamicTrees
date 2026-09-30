@@ -1,5 +1,7 @@
 package com.dtteam.dynamictrees.loot.function;
 
+import net.minecraft.core.Holder;
+import java.util.Optional;
 import com.dtteam.dynamictrees.loot.DTLootContextParams;
 import com.dtteam.dynamictrees.systems.nodemapper.NetVolumeNode;
 import com.mojang.serialization.MapCodec;
@@ -18,7 +20,7 @@ public final class MultiplyByTotalVolume extends LootItemConditionalFunction {
             instance -> commonFields(instance)
                     .apply(instance, MultiplyByTotalVolume::new));
 
-    public MultiplyByTotalVolume(List<LootItemCondition> conditions) {
+    public MultiplyByTotalVolume(Optional<Holder<LootItemCondition>> conditions) {
         super(conditions);
     }
 
@@ -29,7 +31,7 @@ public final class MultiplyByTotalVolume extends LootItemConditionalFunction {
 
     @Override
     protected ItemStack run(ItemStack stack, LootContext context) {
-        final Integer volume = context.getOptionalParameter(DTLootContextParams.VOLUME);
+        final Integer volume = context.getOptional(DTLootContextParams.VOLUME);
         assert volume != null;
         float multiplier = (float)volume / NetVolumeNode.Volume.VOXELSPERLOG;
         stack.setCount(Math.round(stack.getCount() * multiplier));
@@ -37,7 +39,7 @@ public final class MultiplyByTotalVolume extends LootItemConditionalFunction {
     }
 
     public static LootItemFunction.Builder multiplyByTotalVolume() {
-        return () -> new MultiplyByTotalVolume(List.of());
+        return () -> new MultiplyByTotalVolume(Optional.empty());
     }
 
 }

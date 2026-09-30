@@ -66,10 +66,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
+import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
 import org.jetbrains.annotations.NotNull;
 
@@ -288,22 +286,22 @@ public class DTRegistries {
     // WORLDGEN
     ///////////////////////////////////////////
 
-    public static final ResourceKey<ConfiguredFeature<?, ?>> DYNAMIC_TREE_CONFIGURED_FEATURE = ResourceKey.create(Registries.CONFIGURED_FEATURE, DynamicTrees.location("dynamic_tree"));
-    public static final ResourceKey<ConfiguredFeature<?, ?>> CAVE_ROOTED_TREE_CONFIGURED_FEATURE = ResourceKey.create(Registries.CONFIGURED_FEATURE,DynamicTrees.location("cave_rooted_tree"));
+    public static final ResourceKey<Feature> DYNAMIC_TREE_CONFIGURED_FEATURE = ResourceKey.create(Registries.FEATURE, DynamicTrees.location("dynamic_tree"));
+    public static final ResourceKey<Feature> CAVE_ROOTED_TREE_CONFIGURED_FEATURE = ResourceKey.create(Registries.FEATURE,DynamicTrees.location("cave_rooted_tree"));
     public static final ResourceKey<PlacedFeature> DYNAMIC_TREE_PLACED_FEATURE = ResourceKey.create(Registries.PLACED_FEATURE,DynamicTrees.location("dynamic_tree"));
     /** Placement for trees that generate on the surface above the target biome. This is used for trees like the azalea. */
     public static final ResourceKey<PlacedFeature> CAVE_ROOTED_TREE_PLACED_FEATURE = ResourceKey.create(Registries.PLACED_FEATURE,DynamicTrees.location("cave_rooted_tree"));
 
-    public static final Supplier<PlacementModifierType<@NotNull CaveRootedTreePlacement>> CAVE_ROOTED_TREE_PLACEMENT_MODIFIER_TYPE = Services.REGISTRY.getRegistryLoader()
-            .registerPlacementModifierType("cave_rooted_tree", () -> () -> CaveRootedTreePlacement.CODEC);
+    public static final Supplier<MapCodec<CaveRootedTreePlacement>> CAVE_ROOTED_TREE_PLACEMENT_MODIFIER_TYPE = Services.REGISTRY.getRegistryLoader()
+            .registerPlacementModifierType("cave_rooted_tree", CaveRootedTreePlacement.CODEC);
 
-    public static final Supplier<DynamicTreeFeature> DYNAMIC_TREE_FEATURE = Services.REGISTRY.getRegistryLoader()
-            .registerFeature("tree", DynamicTreeFeature::new);
-    public static final Supplier<CaveRootedTreeFeature> CAVE_ROOTED_TREE_FEATURE = Services.REGISTRY.getRegistryLoader()
-            .registerFeature("cave_rooted_tree", CaveRootedTreeFeature::new);
+    public static final Supplier<MapCodec<DynamicTreeFeature>> DYNAMIC_TREE_FEATURE = Services.REGISTRY.getRegistryLoader()
+            .registerFeature("tree", DynamicTreeFeature.CODEC);
+    public static final Supplier<MapCodec<CaveRootedTreeFeature>> CAVE_ROOTED_TREE_FEATURE = Services.REGISTRY.getRegistryLoader()
+            .registerFeature("cave_rooted_tree", CaveRootedTreeFeature.CODEC);
 
-    public static final Supplier<BlockStateProviderType<@NotNull DTReplaceNyliumFungiBlockStateProvider>> REPLACE_NYLIUM_FUNGI_BLOCK_STATE_PROVIDER_TYPE = Services.REGISTRY.getRegistryLoader()
-            .registerBlockStateProviderType("replace_nylium_fungi", () -> new BlockStateProviderType<>(DTReplaceNyliumFungiBlockStateProvider.CODEC));
+    public static final Supplier<MapCodec<DTReplaceNyliumFungiBlockStateProvider>> REPLACE_NYLIUM_FUNGI_BLOCK_STATE_PROVIDER_TYPE = Services.REGISTRY.getRegistryLoader()
+            .registerBlockStateProviderType("replace_nylium_fungi", DTReplaceNyliumFungiBlockStateProvider.CODEC);
 
     public static final Supplier<StructurePoolElementType<@NotNull DTCancelVanillaTreePoolElement>> CANCEL_VANILLA_VILLAGE_TREE_STRUCTURE_POOL_ELEMENT_TYPE = Services.REGISTRY.getRegistryLoader()
             .registerStructurePoolElementType("cancel_vanilla_village_tree_element", () -> () -> DTCancelVanillaTreePoolElement.CODEC);

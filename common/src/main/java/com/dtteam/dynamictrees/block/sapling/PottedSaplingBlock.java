@@ -1,5 +1,8 @@
 package com.dtteam.dynamictrees.block.sapling;
 
+import net.minecraft.util.Prediction;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
 import com.dtteam.dynamictrees.platform.Services;
 import com.dtteam.dynamictrees.tree.species.Species;
 import com.dtteam.dynamictrees.utility.ItemUtils;
@@ -40,7 +43,7 @@ public class PottedSaplingBlock extends BaseEntityBlock {
     protected static final AABB FLOWER_POT_AABB = new AABB(0.3125D, 0.0D, 0.3125D, 0.6875D, 0.375D, 0.6875D);
 
     public PottedSaplingBlock(Identifier id) {
-        super(Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.DESTROY).setId(ResourceKey.create(Registries.BLOCK, id)));
+        super(Properties.of().instabreak().noOcclusion().pushReaction(PushReaction.POPPED).setId(ResourceKey.create(Registries.BLOCK, id)));
     }
 
     //////////////////////////////
@@ -121,7 +124,7 @@ public class PottedSaplingBlock extends BaseEntityBlock {
 
             if (!player.addItem(seedStack)) {
                 // If their inventory is full, drop it instead.
-                player.drop(seedStack, false);
+                player.drop(seedStack, false, Prediction.SERVER_ONLY);
             }
         }
 
@@ -185,7 +188,7 @@ public class PottedSaplingBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
+    public void playerDestroy(ServerLevel level, ServerPlayer player, BlockPos pos, BlockState state, @Nullable BlockEntity te, ItemStack stack) {
         super.playerDestroy(level, player, pos, state, te, stack);
         this.spawnDrops(level, pos);
         level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
@@ -216,11 +219,6 @@ public class PottedSaplingBlock extends BaseEntityBlock {
     ///////////////////////////////////////////
     // RENDERING
     ///////////////////////////////////////////
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return null;
-    }
 
     @Override
     public RenderShape getRenderShape(BlockState state) {

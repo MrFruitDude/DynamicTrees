@@ -16,7 +16,7 @@ public class LingeringEffectorRenderer extends EntityRenderer<LingeringEffectorE
     }
 
     @Override
-    public boolean shouldRender(LingeringEffectorEntity entity, Frustum camera, double camX, double camY, double camZ) {
+    public boolean shouldRender(LingeringEffectorEntity entity, Frustum camera, double camX, double camY, double camZ, float partialTicks) {
         return false;
     }
 

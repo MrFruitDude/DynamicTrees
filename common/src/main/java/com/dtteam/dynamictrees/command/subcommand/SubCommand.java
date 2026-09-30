@@ -1,5 +1,6 @@
 package com.dtteam.dynamictrees.command.subcommand;
 
+import net.minecraft.world.level.block.BonemealSource;
 import com.dtteam.dynamictrees.api.function.ThrowableRunnable;
 import com.dtteam.dynamictrees.block.sapling.DynamicSaplingBlock;
 import com.dtteam.dynamictrees.command.CommandConstants;
@@ -136,7 +137,7 @@ public abstract class SubCommand {
         //Grow the sapling if one was targeted
         BlockState sourceState = context.getSource().getLevel().getBlockState(pos);
         if (sourceState.getBlock() instanceof DynamicSaplingBlock sapling){
-            sapling.performBonemeal(context.getSource().getLevel(), context.getSource().getLevel().getRandom(), pos, sourceState);
+            sapling.performBonemeal(context.getSource().getLevel(), context.getSource().getLevel().getRandom(), pos, sourceState, BonemealSource.INTERACTION);
         }
         final BlockPos rootPos = TreeHelper.findRootNode(context.getSource().getLevel(), pos);
 

@@ -20,6 +20,7 @@ import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.context.ContextKeySet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTab;
@@ -32,9 +33,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProvider;
-import net.minecraft.world.level.levelgen.feature.stateproviders.BlockStateProviderType;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
-import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
@@ -55,10 +54,10 @@ public class NeoForgeRegistryLoader extends RegistryLoader {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, DynamicTrees.MOD_ID);
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, DynamicTrees.MOD_ID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, DynamicTrees.MOD_ID);
-    public static final DeferredRegister<PlacementModifierType<?>> PLACEMENT_MODIFIER_TYPES = DeferredRegister.create(Registries.PLACEMENT_MODIFIER_TYPE, DynamicTrees.MOD_ID);
-    public static final DeferredRegister<Feature<?>> FEATURES = DeferredRegister.create(Registries.FEATURE, DynamicTrees.MOD_ID);
+    public static final DeferredRegister<MapCodec<? extends PlacementModifier>> PLACEMENT_MODIFIER_TYPES = DeferredRegister.create(Registries.PLACEMENT_MODIFIER_TYPE, DynamicTrees.MOD_ID);
+    public static final DeferredRegister<MapCodec<? extends Feature>> FEATURES = DeferredRegister.create(Registries.FEATURE_TYPE, DynamicTrees.MOD_ID);
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, DynamicTrees.MOD_ID);
-    public static final DeferredRegister<BlockStateProviderType<?>> BLOCK_STATE_PROVIDER_TYPES = DeferredRegister.create(Registries.BLOCK_STATE_PROVIDER_TYPE, DynamicTrees.MOD_ID);
+    public static final DeferredRegister<MapCodec<? extends BlockStateProvider>> BLOCK_STATE_PROVIDER_TYPES = DeferredRegister.create(Registries.BLOCK_STATE_PROVIDER_TYPE, DynamicTrees.MOD_ID);
     public static final DeferredRegister<StructurePoolElementType<?>> STRUCTURE_POOL_ELEMENT_TYPES = DeferredRegister.create(Registries.STRUCTURE_POOL_ELEMENT, DynamicTrees.MOD_ID);
     public static final DeferredRegister<DataComponentType<?>> DATA_COMPONENT_TYPES = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, DynamicTrees.MOD_ID);
     public static final DeferredRegister<ArgumentTypeInfo<?, ?>> ARGUMENT_TYPES = DeferredRegister.create(Registries.COMMAND_ARGUMENT_TYPE, DynamicTrees.MOD_ID);
@@ -67,6 +66,7 @@ public class NeoForgeRegistryLoader extends RegistryLoader {
     public static final DeferredRegister<MapCodec<? extends LootItemFunction>> LOOT_FUNCTION_TYPES = DeferredRegister.create(Registries.LOOT_FUNCTION_TYPE, DynamicTrees.MOD_ID);
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZER = DeferredRegister.create(Registries.RECIPE_SERIALIZER, DynamicTrees.MOD_ID);
     public static final DeferredRegister<EntityDataSerializer<?>> ENTITY_DATA_SERIALIZER = DeferredRegister.create(NeoForgeRegistries.ENTITY_DATA_SERIALIZERS, DynamicTrees.MOD_ID);
+    public static final DeferredRegister<ContextKeySet> CONTEXT_KEY_SETS = DeferredRegister.create(Registries.CONTEXT_KEY_SET, DynamicTrees.MOD_ID);
 
 
     public static void setup(IEventBus modBus) {
@@ -84,6 +84,7 @@ public class NeoForgeRegistryLoader extends RegistryLoader {
         LOOT_CONDITION_TYPES.register(modBus);
         LOOT_FUNCTION_TYPES.register(modBus);
         RECIPE_SERIALIZER.register(modBus);
+        CONTEXT_KEY_SETS.register(modBus);
 
         //NeoForge
         BIOME_MODIFIER_SERIALIZERS.register(modBus);
@@ -173,18 +174,23 @@ public class NeoForgeRegistryLoader extends RegistryLoader {
     ///////////////////////////////////////////
 
     @Override
-    public <T extends PlacementModifier> Supplier<PlacementModifierType<T>> registerPlacementModifierType (String name, Supplier<PlacementModifierType<T>> supplier){
-        return PLACEMENT_MODIFIER_TYPES.register(name, supplier);
+    public <T extends PlacementModifier> Supplier<MapCodec<T>> registerPlacementModifierType (String name, MapCodec<T> codec){
+        return PLACEMENT_MODIFIER_TYPES.register(name, () -> codec);
     }
 
     @Override
-    public <T extends Feature<?>> Supplier<T> registerFeature (String name, Supplier<T> supplier){
-        return FEATURES.register(name, supplier);
+    public <T extends Feature> Supplier<MapCodec<T>> registerFeature (String name, MapCodec<T> codec){
+        return FEATURES.register(name, () -> codec);
     }
 
     @Override
-    public <T extends BlockStateProvider> Supplier<BlockStateProviderType<T>> registerBlockStateProviderType (String name, Supplier<BlockStateProviderType<T>> supplier){
-        return BLOCK_STATE_PROVIDER_TYPES.register(name, supplier);
+    public <T extends BlockStateProvider> Supplier<MapCodec<T>> registerBlockStateProviderType (String name, MapCodec<T> codec){
+        return BLOCK_STATE_PROVIDER_TYPES.register(name, () -> codec);
+    }
+
+    @Override
+    public Supplier<ContextKeySet> registerContextKeySet(String name, Supplier<ContextKeySet> paramSet) {
+        return CONTEXT_KEY_SETS.register(name, paramSet);
     }
 
     @Override

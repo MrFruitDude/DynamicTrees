@@ -132,14 +132,14 @@ public final class TreesResourceManager implements ResourceManager, TreeResource
     }
 
     @Override
-    public Map<Identifier, Resource> listResources(String path, Predicate<Identifier> filter) {
+    public Map<Identifier, Resource> listResources(String path, ResourceManager.Selector filter) {
         Map<Identifier, Resource> resources = new LinkedHashMap<>();
 
         for (TreeResourcePack pack : this.resourcePacks) {
             for (String namespace : pack.getNamespaces()) {
                 pack.listResources(namespace, path, (loc, resource) -> {
                     // TODO Mcmeta files? See FallbackResourceManager#listResources for an example
-                    if (filter.test(loc)) {
+                    if (filter.isIncluded(loc)) {
                         // TODO Should this throw or doing anything if the key already has an associated value?
                         resources.put(loc, getResource(loc, pack));
                     }
@@ -151,14 +151,14 @@ public final class TreesResourceManager implements ResourceManager, TreeResource
     }
 
     @Override
-    public Map<Identifier, List<Resource>> listResourceStacks(String path, Predicate<Identifier> filter) {
+    public Map<Identifier, List<Resource>> listResourceStacks(String path, ResourceManager.Selector filter) {
         Map<Identifier, List<Resource>> resources = new LinkedHashMap<>();
 
         for (TreeResourcePack pack : this.resourcePacks) {
             for (String namespace : pack.getNamespaces()) {
                 pack.listResources(namespace, path, (loc, resource) -> {
                     // TODO Mcmeta files? See FallbackResourceManager#listResourceStacks for an example
-                    if (filter.test(loc)) {
+                    if (filter.isIncluded(loc)) {
                         resources.computeIfAbsent(loc, this::getResourceStack);
                     }
                 });

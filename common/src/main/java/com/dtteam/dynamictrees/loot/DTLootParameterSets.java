@@ -1,8 +1,7 @@
 package com.dtteam.dynamictrees.loot;
 
-import com.dtteam.dynamictrees.DynamicTrees;
 import net.minecraft.util.context.ContextKeySet;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import com.dtteam.dynamictrees.platform.Services;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 import java.util.function.Consumer;
@@ -49,7 +48,7 @@ public final class DTLootParameterSets {
         builderConsumer.accept(builder);
 
         final ContextKeySet paramSet = builder.build();
-        LootContextParamSets.REGISTRY.put(DynamicTrees.location(path), paramSet);
+        Services.REGISTRY.getRegistryLoader().registerContextKeySet(path, () -> paramSet);
 
         return paramSet;
     }

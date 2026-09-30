@@ -6,6 +6,7 @@ import com.dtteam.dynamictrees.registry.NeoForgeRegistryLoader;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
@@ -14,7 +15,6 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.neoforged.neoforge.common.world.BiomeGenerationSettingsBuilder;
 import net.neoforged.neoforge.common.world.BiomeModifier;
 import net.neoforged.neoforge.common.world.ModifiableBiomeInfo;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,12 +27,11 @@ public class AddDynamicTreesBiomeModifier implements BiomeModifier {
     private Optional<Registry<PlacedFeature>> featureRegistry;
 
     @Override
-    public void modify(Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
+    public void modify(RegistryAccess registries, Holder<Biome> biome, Phase phase, ModifiableBiomeInfo.BiomeInfo.Builder builder) {
         if (phase == Phase.ADD && DTConfigs.SERVER.worldGen.get()) {
             BiomeGenerationSettingsBuilder generationSettings = builder.getGenerationSettings();
-            net.minecraft.server.MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server == null) return;
-            featureRegistry = server.registryAccess().lookup(Registries.PLACED_FEATURE);
+            // MC 26.3: the registries are passed to modify() directly.
+            featureRegistry = registries.lookup(Registries.PLACED_FEATURE);
 
             addFeature(generationSettings, DTRegistries.CAVE_ROOTED_TREE_PLACED_FEATURE);
             addFeature(generationSettings, DTRegistries.DYNAMIC_TREE_PLACED_FEATURE);

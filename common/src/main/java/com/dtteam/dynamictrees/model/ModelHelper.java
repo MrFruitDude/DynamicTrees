@@ -84,7 +84,7 @@ public class ModelHelper {
 
     public static BakedQuad makeBakedQuad(ModelBaker baker, CuboidModelElement blockPart, CuboidFace partFace, Material.Baked material, Direction dir) {
         CuboidRotation noRotation = new CuboidRotation(new Vector3f(0,0,0), Matrix4f::new, false);
-        return FaceBakery.bakeQuad(baker, blockPart.from(), blockPart.to(), partFace, material, dir, noState(), noRotation, true, 0);
+        return FaceBakery.bakeQuad(baker, blockPart.from(), blockPart.to(), partFace, material, dir, noState(), noRotation, null, 0);
     }
 
     public static ModelState noState(){

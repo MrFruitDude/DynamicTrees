@@ -69,13 +69,8 @@ public class DynamicLeavesBlock extends TintedParticleLeavesBlock implements Tre
     }
 
     public DynamicLeavesBlock(Identifier id, Properties leavesProperties, float leafParticleChance) {
-        super(leafParticleChance, leavesProperties.pushReaction(PushReaction.DESTROY).setId(ResourceKey.create(Registries.BLOCK, id)));
+        super(leafParticleChance, leavesProperties.pushReaction(PushReaction.POPPED).setId(ResourceKey.create(Registries.BLOCK, id)));
         this.registerDefaultState(this.stateDefinition.any().setValue(DISTANCE, LeavesProperties.maxHydro).setValue(PERSISTENT, false).setValue(WATERLOGGED, false));
-    }
-
-    @Override
-    public MapCodec<? extends TintedParticleLeavesBlock> codec() {
-        return CODEC;
     }
 
     ///////////////////////////////////////////

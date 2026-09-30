@@ -68,7 +68,7 @@ public class HugeMushroomUndergrowthGenFeature extends HugeMushroomGenFeature {
 
             BlockPos mushPos = rootPos.offset(xOff, 0, zOff);
 
-            mushPos = CoordUtils.findWorldSurface(level, new BlockPos(mushPos), context.isWorldGen()).above();
+            mushPos = CoordUtils.findWorldSurface(level, mushPos, context.isWorldGen()).above();
 
             if (ChunkTreeHelper.canCheckSurroundings(level, mushPos, 3)) {
                 int maxHeight = lowest.getY() - mushPos.getY();

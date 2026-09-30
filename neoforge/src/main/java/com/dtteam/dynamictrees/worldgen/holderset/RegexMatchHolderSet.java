@@ -57,7 +57,8 @@ public abstract class RegexMatchHolderSet<T> extends StreamBackedHolderSet<T> im
 
     @Override
     public boolean canSerializeIn(HolderOwner<T> owner) {
-        return this.registryLookup.canSerializeIn(owner);
+        // MC 26.3: HolderOwner.canSerializeIn became canSerialize(owner) on the target owner.
+        return owner.canSerialize(this.registryLookup);
     }
 
     /**

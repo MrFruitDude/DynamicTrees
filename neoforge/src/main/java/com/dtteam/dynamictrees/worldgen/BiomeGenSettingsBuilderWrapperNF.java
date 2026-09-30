@@ -3,7 +3,6 @@ package com.dtteam.dynamictrees.worldgen;
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.levelgen.GenerationStep;
-import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.neoforged.neoforge.common.world.BiomeGenerationSettingsBuilder;
 

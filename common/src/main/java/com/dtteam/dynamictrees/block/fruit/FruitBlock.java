@@ -1,5 +1,6 @@
 package com.dtteam.dynamictrees.block.fruit;
 
+import net.minecraft.world.level.block.BonemealSource;
 import com.dtteam.dynamictrees.api.worldgen.LevelContext;
 import com.dtteam.dynamictrees.block.Growable;
 import com.dtteam.dynamictrees.platform.Services;
@@ -190,17 +191,17 @@ public class FruitBlock extends Block implements BonemealableBlock, Growable {
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
+    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState, BonemealSource source) {
         return fruit.canBoneMeal() && getAge(blockState) < fruit.getMaxAge();
     }
 
     @Override
-    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state) {
+    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state, BonemealSource source) {
         return true;
     }
 
     @Override
-    public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
+    public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, BonemealSource source) {
         final int age = getAge(state);
         final int newAge = Math.min(age + 1, fruit.getMaxAge());
         if (newAge != age) {

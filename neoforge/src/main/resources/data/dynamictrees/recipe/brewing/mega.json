@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "dynamictrees:dendro_potion",
+      "components": {
+        "dynamictrees:potion_index": 0
+      }
+    }
+  },
+  "reagent": {
+    "item": "minecraft:brown_mushroom"
+  },
+  "output": {
+    "id": "dynamictrees:dendro_potion",
+    "components": {
+      "dynamictrees:potion_index": 2
+    }
+  }
+}

@@ -318,7 +318,7 @@ public class BasicRootsBlock extends BranchBlock implements SimpleWaterloggedBlo
     public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, ItemStack toolStack, boolean willHarvest, FluidState fluid) {
         if (isFullBlock(state)){
             level.setBlock(pos, state.setValue(LAYER, Layer.FILLED), level.isClientSide() ? 11 : 3);
-            this.spawnDestroyParticles(level, player, pos, state);
+            this.spawnDestroyByEntityParticles(level, player, pos, state);
             level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             Block primitive = state.getValue(LAYER).getPrimitive(getAerialFamily()).orElse(null);
             if (!player.isCreative() && primitive != null) dropResources(primitive.defaultBlockState(), level, pos);
@@ -398,7 +398,7 @@ public class BasicRootsBlock extends BranchBlock implements SimpleWaterloggedBlo
         }
 
         BlockPos lowestBlock = stateMapper.getBranchConnectionMap().keySet().stream().min(Comparator.comparingInt(Vec3i::getY)).orElse(BlockPos.ZERO);
-        final BlockPos.MutableBlockPos basePos = new BlockPos(cutPos).mutable();
+        final BlockPos.MutableBlockPos basePos = cutPos.mutable();
         for (int i = 0; i>lowestBlock.getY(); i--) {
             if (!level.getBlockState(basePos.move(0, -1, 0).below()).canBeReplaced()){
                 break;

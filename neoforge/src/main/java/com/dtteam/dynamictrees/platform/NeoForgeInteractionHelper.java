@@ -9,13 +9,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.neoforged.neoforge.common.ItemAbilities;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.BlockTransformers;
 
 public class NeoForgeInteractionHelper implements IInteractionHelper {
 
     @Override
     public boolean canToolAxeStrip(ItemStack stack) {
-        return stack.canPerformAction(ItemAbilities.AXE_STRIP);
+        // MC 26.3: ItemAbilities.AXE_STRIP is gone; axes carry the minecraft:axe BLOCK_TRANSFORMER component.
+        var transformer = stack.get(DataComponents.BLOCK_TRANSFORMER);
+        return transformer != null && transformer.is(BlockTransformers.AXE);
     }
 
     /**

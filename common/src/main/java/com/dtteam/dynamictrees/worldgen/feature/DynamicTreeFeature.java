@@ -29,15 +29,19 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.util.RandomSource;
+import com.mojang.serialization.MapCodec;
 
 import java.util.Arrays;
 
 /**
  * @author Harley O'Connor
  */
-public class DynamicTreeFeature extends Feature<NoneFeatureConfiguration> {
+public class DynamicTreeFeature implements Feature {
+
+    public static final MapCodec<DynamicTreeFeature> CODEC = MapCodec.unit(DynamicTreeFeature::new);
 
     public static final UniversalPoissonDiscProvider DISC_PROVIDER = new UniversalPoissonDiscProvider();
     protected static final RandomXOR RANDOM = new RandomXOR();
@@ -51,22 +55,26 @@ public class DynamicTreeFeature extends Feature<NoneFeatureConfiguration> {
     }
 
     public DynamicTreeFeature() {
-        super(NoneFeatureConfiguration.CODEC);
     }
 
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        LevelContext levelContext = LevelContext.create(context.level());
+    public MapCodec<? extends DynamicTreeFeature> codec() {
+        return CODEC;
+    }
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
+        LevelContext levelContext = LevelContext.create(level);
 
         if (BiomeDatabases.isBlacklisted(levelContext.dimensionName())) {
             return false;
         }
 
         BiomeDatabase biomeDatabase = BiomeDatabases.getDimensionalOrDefault(levelContext.dimensionName());
-        ChunkPos chunkPos = ChunkPos.containing(context.origin());
+        ChunkPos chunkPos = ChunkPos.containing(origin);
 
         DISC_PROVIDER.getPoissonDiscs(levelContext, chunkPos).forEach(disc ->
-                generateTrees(levelContext, biomeDatabase, disc, context.origin())
+                generateTrees(levelContext, biomeDatabase, disc, origin)
         );
 
         return true;

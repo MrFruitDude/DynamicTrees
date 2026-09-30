@@ -1,5 +1,6 @@
 package com.dtteam.dynamictrees.block.branch;
 
+import net.minecraft.world.level.block.BonemealSource;
 import com.dtteam.dynamictrees.DynamicTrees;
 import com.dtteam.dynamictrees.api.network.BranchDestructionData;
 import com.dtteam.dynamictrees.api.network.Connections;
@@ -93,7 +94,7 @@ public abstract class BranchBlock extends BlockWithDynamicHardness implements Tr
      * @param name name of branch, without a {@code _branch} suffix
      */
     public BranchBlock(Identifier name) {
-        this(name, Properties.of().pushReaction(PushReaction.BLOCK));
+        this(name, Properties.of().pushReaction(PushReaction.IMMOVEABLE));
     }
 
     /**
@@ -249,7 +250,7 @@ public abstract class BranchBlock extends BlockWithDynamicHardness implements Tr
      * and they are not normally called. However, they are here for mod compatibility.
      */
     @Override
-    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
+    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState, BonemealSource source) {
         if (!(levelReader instanceof Level level)) return false;
         BlockPos rootPos = TreeHelper.findRootNode(level, blockPos);
         if (rootPos == BlockPos.ZERO) return false;
@@ -257,23 +258,23 @@ public abstract class BranchBlock extends BlockWithDynamicHardness implements Tr
         SoilBlock root = TreeHelper.getRooty(rootState);
         if (root == null) return false;
 
-        return root.isValidBonemealTarget(levelReader, rootPos, rootState);
+        return root.isValidBonemealTarget(levelReader, rootPos, rootState, source);
     }
 
     @Override
-    public boolean isBonemealSuccess(Level pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState){
+    public boolean isBonemealSuccess(Level pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState, BonemealSource source){
         return true;
     }
 
     @Override
-    public void performBonemeal(ServerLevel pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState){
+    public void performBonemeal(ServerLevel pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState, BonemealSource source){
         BlockPos rootPos = TreeHelper.findRootNode(pLevel, pPos);
         if (rootPos == BlockPos.ZERO) return;
         BlockState rootState = pLevel.getBlockState(rootPos);
         SoilBlock root = TreeHelper.getRooty(rootState);
         if (root == null) return;
 
-        root.performBonemeal(pLevel, pRandom, rootPos, rootState);
+        root.performBonemeal(pLevel, pRandom, rootPos, rootState, source);
     }
 
     public abstract BranchBlock setFlammability(int flammability);

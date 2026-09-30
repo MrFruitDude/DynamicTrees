@@ -10,6 +10,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -27,8 +28,8 @@ public class DTBlockLootSubProvider extends BlockLootSubProvider {
     private final String modId;
     private final Map<ResourceKey<LootTable>, LootTable.Builder> map = new HashMap<>();
 
-    protected DTBlockLootSubProvider(HolderLookup.Provider registries, String modId) {
-        super(Set.of(), FeatureFlagSet.of(), registries);
+    protected DTBlockLootSubProvider(LootTableSubProvider.Context context, String modId, HolderLookup.Provider registries) {
+        super(Set.of(), FeatureFlagSet.of(), context);
         this.registries = registries;
 
         this.modId = modId;
@@ -55,11 +56,12 @@ public class DTBlockLootSubProvider extends BlockLootSubProvider {
         ModLoader.postEvent(new DataGenerationStreamEvent(this, modId, map, registries));
     }
 
+    /** MC 26.3: sub-providers push tables into the bootstrap context instead of a BiConsumer. */
     @Override
-    public void generate(@NotNull BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
+    public void run() {
         this.generate();
 
-        this.map.forEach(output);
+        this.map.forEach(this.output::accept);
     }
 
     private void addVoluntaryTable(Species species) {

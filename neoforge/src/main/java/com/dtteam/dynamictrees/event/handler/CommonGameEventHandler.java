@@ -7,7 +7,6 @@ import com.dtteam.dynamictrees.api.registry.SimpleRegistry;
 import com.dtteam.dynamictrees.api.worldgen.FeatureCanceller;
 import com.dtteam.dynamictrees.command.DTCommand;
 import com.dtteam.dynamictrees.deserialization.JsonDeserializers;
-import com.dtteam.dynamictrees.recipe.DendroPotionRecipeHandler;
 import com.dtteam.dynamictrees.systems.FutureBreak;
 import com.dtteam.dynamictrees.systems.season.SeasonCompatibilityHandler;
 import com.dtteam.dynamictrees.systems.season.SeasonHelper;
@@ -21,7 +20,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
@@ -149,11 +147,10 @@ public class CommonGameEventHandler {
     // REGISTRY
     ///////////////////////////////////////////
 
-    @SubscribeEvent
-    public static void registerBrewingRecipes(final RegisterBrewingRecipesEvent event) {
-        DendroPotionRecipeHandler.getAllDendroRecipes().forEach(
-                recipe -> event.getBuilder().addRecipe(recipe));
-    }
+    // MC 26.3: RegisterBrewingRecipesEvent was removed; dendro potion brewing recipes are now datapack
+    // recipes (data/dynamictrees/recipe/brewing/*.json, type minecraft:brewing).
+    // TODO(port26.3): the biocharBrewingBase config option no longer changes the base potion at runtime;
+    // override data/dynamictrees/recipe/brewing/biochar_base.json in a datapack instead.
 
     @SubscribeEvent
     public static void newRegistry(NewRegistryEvent event) {

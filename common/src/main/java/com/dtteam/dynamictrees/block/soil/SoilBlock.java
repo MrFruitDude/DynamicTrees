@@ -1,5 +1,6 @@
 package com.dtteam.dynamictrees.block.soil;
 
+import net.minecraft.world.level.block.BonemealSource;
 import com.dtteam.dynamictrees.DynamicTrees;
 import com.dtteam.dynamictrees.api.cell.Cell;
 import com.dtteam.dynamictrees.api.cell.CellNull;
@@ -71,7 +72,7 @@ public class SoilBlock extends BlockWithDynamicHardness implements TreePart, Ent
     private final SoilProperties properties;
 
     public SoilBlock(Identifier id, SoilProperties properties, Properties blockProperties) {
-        super(blockProperties.randomTicks().pushReaction(PushReaction.BLOCK).setId(ResourceKey.create(Registries.BLOCK, id)));
+        super(blockProperties.randomTicks().pushReaction(PushReaction.IMMOVEABLE).setId(ResourceKey.create(Registries.BLOCK, id)));
         this.properties = properties;
         registerDefaultState(defaultBlockState().setValue(FERTILITY, 0).setValue(IS_VARIANT, false));
     }
@@ -304,7 +305,7 @@ public class SoilBlock extends BlockWithDynamicHardness implements TreePart, Ent
     @SuppressWarnings("unused")
     public boolean onDestroyedByPlayer(BlockState state, Level level, BlockPos pos, Player player, boolean willHarvest, FluidState fluid){
         if (getSpecies(state, level, pos).soilDestroyAction(level, pos, state, player)){
-            this.spawnDestroyParticles(level, player, pos, state);
+            this.spawnDestroyByEntityParticles(level, player, pos, state);
             level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
             return false;
         }
@@ -342,18 +343,18 @@ public class SoilBlock extends BlockWithDynamicHardness implements TreePart, Ent
      * and they are not normally called. However, they are here for mod compatibility.
      */
     @Override
-    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
+    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState, BonemealSource source) {
         if (levelReader instanceof Level level)
             return getSpecies(blockState, level, blockPos).canBoneMealTree();
         return false;
     }
 
     @Override
-    public boolean isBonemealSuccess(Level pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState){
+    public boolean isBonemealSuccess(Level pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState, BonemealSource source){
         return true;
     }
     @Override
-    public void performBonemeal(ServerLevel pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState){
+    public void performBonemeal(ServerLevel pLevel, RandomSource pRandom, BlockPos pPos, BlockState pState, BonemealSource source){
         Species species = getSpecies(pState, pLevel, pPos);
         if (species.isValid()){
             species.applySubstance(pLevel, pPos, pPos, null, null, new ItemStack(Items.BONE_MEAL));

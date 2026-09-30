@@ -4,15 +4,14 @@ import com.dtteam.dynamictrees.api.worldgen.BiomePropertySelectors;
 import com.dtteam.dynamictrees.api.worldgen.FeatureCanceller;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
-import net.minecraft.world.level.levelgen.feature.configurations.RandomBooleanFeatureConfiguration;
-import net.minecraft.world.level.levelgen.feature.configurations.RandomFeatureConfiguration;
+import net.minecraft.core.Holder;
+import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.RandomSelectorFeature;
 
 import java.util.stream.Stream;
 
 
-public class MushroomFeatureCanceller<T extends FeatureConfiguration> extends FeatureCanceller {
+public class MushroomFeatureCanceller<T extends Feature> extends FeatureCanceller {
     private final Class<T> mushroomFeatureConfigClass;
 
     public MushroomFeatureCanceller(final Identifier registryName, final Class<T> mushroomFeatureConfigClass) {
@@ -21,15 +20,15 @@ public class MushroomFeatureCanceller<T extends FeatureConfiguration> extends Fe
     }
 
     @Override
-    public boolean shouldCancel(final ConfiguredFeature<?, ?> configuredFeature, final BiomePropertySelectors.NormalFeatureCancellation featureCancellations) {
-        final Identifier featureRegistryName = BuiltInRegistries.FEATURE.getKey(configuredFeature.feature());
+    public boolean shouldCancel(final Feature configuredFeature, final BiomePropertySelectors.NormalFeatureCancellation featureCancellations) {
+        final Identifier featureRegistryName = BuiltInRegistries.FEATURE_TYPE.getKey(configuredFeature.codec());
 
         if (featureRegistryName == null) {
             return false;
         }
 
         // Mushrooms come in RandomBooleanFeatureConfiguration to select between brown and red.
-        if (!(configuredFeature.config() instanceof RandomFeatureConfiguration randomConfig)) {
+        if (!(configuredFeature instanceof RandomSelectorFeature randomConfig)) {
             return false;
         }
 
@@ -37,7 +36,7 @@ public class MushroomFeatureCanceller<T extends FeatureConfiguration> extends Fe
                 featureCancellations.shouldCancelNamespace(featureRegistryName.getNamespace());
     }
 
-    private Stream<FeatureConfiguration> getConfigs(final RandomFeatureConfiguration twoFeatureConfig) {
-        return twoFeatureConfig.getSubFeatures().map(c -> c.value().config());
+    private Stream<Feature> getConfigs(final RandomSelectorFeature twoFeatureConfig) {
+        return twoFeatureConfig.getSubFeatures().map(Holder::value);
     }
 }

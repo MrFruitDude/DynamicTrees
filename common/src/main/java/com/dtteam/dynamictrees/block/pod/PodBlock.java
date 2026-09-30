@@ -1,5 +1,6 @@
 package com.dtteam.dynamictrees.block.pod;
 
+import net.minecraft.world.level.block.BonemealSource;
 import com.dtteam.dynamictrees.api.worldgen.LevelContext;
 import com.dtteam.dynamictrees.block.Growable;
 import com.dtteam.dynamictrees.platform.Services;
@@ -39,8 +40,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PodBlock extends HorizontalDirectionalBlock implements BonemealableBlock, Growable {
 
-    public static final MapCodec<PodBlock> CODEC = simpleCodec(PodBlock::new);
-
     protected final Pod pod;
 
     public PodBlock(Properties properties) {
@@ -56,11 +55,6 @@ public class PodBlock extends HorizontalDirectionalBlock implements Bonemealable
         this.createBlockStateDefinition(builder);
         this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
         this.registerDefaultState(this.stateDefinition.any());
-    }
-
-    @Override
-    protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -203,17 +197,17 @@ public class PodBlock extends HorizontalDirectionalBlock implements Bonemealable
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
+    public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState, BonemealSource source) {
         return pod.canBoneMeal() && getAge(blockState) < pod.getMaxAge();
     }
 
     @Override
-    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state) {
+    public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state, BonemealSource source) {
         return true;
     }
 
     @Override
-    public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
+    public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state, BonemealSource source) {
         final int age = getAge(state);
         final int newAge = Math.min(age + 1, pod.getMaxAge());
         if (newAge != age) {

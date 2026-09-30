@@ -26,7 +26,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.apache.logging.log4j.LogManager;
@@ -207,12 +206,19 @@ public final class SpeciesResourceLoader extends JsonRegistryResourceLoader<Spec
         if (species.hasPods()) Species.REGISTRY.runOnNextLock(species::inheritSeasonalFruitingParametersToPods);
     }
 
+    /**
+     * MC 26.3 removed the mutable {@code ComposterBlock.COMPOSTABLES} map: compostability is now the
+     * {@code minecraft:compostable} item data component, fixed when the item is built. Tree-pack chances are
+     * loaded after item registration, so they can no longer be applied here. PORT GAP (26.3): the configured
+     * chances are reported and dropped; seeds keep their registration-time components.
+     */
     private void registerComposterChances() {
-        this.composterChanceCache.forEach((species, chance) -> {
-            if (species.getSeed().isPresent() && chance > 0) {
-                ComposterBlock.COMPOSTABLES.put(species.getSeed().get(), chance.floatValue());
-            }
-        });
+        long configured = this.composterChanceCache.entrySet().stream()
+                .filter(entry -> entry.getKey().getSeed().isPresent() && entry.getValue() > 0)
+                .count();
+        if (configured > 0) {
+            LOGGER.warn("{} species define a seed composter chance; per-species composter chances are not applied on MC 26.3 (compostability is an item data component).", configured);
+        }
         this.composterChanceCache.clear();
     }
 

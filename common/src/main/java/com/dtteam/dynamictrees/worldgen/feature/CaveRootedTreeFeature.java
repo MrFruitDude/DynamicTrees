@@ -11,8 +11,9 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.util.RandomSource;
+import com.mojang.serialization.MapCodec;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,9 +22,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CaveRootedTreeFeature extends DynamicTreeFeature {
 
+    public static final MapCodec<CaveRootedTreeFeature> CODEC = MapCodec.unit(CaveRootedTreeFeature::new);
+
     @Override
-    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
-        WorldGenLevel level = context.level();
+    public MapCodec<CaveRootedTreeFeature> codec() {
+        return CODEC;
+    }
+
+    @Override
+    public boolean place(WorldGenLevel level, ChunkGenerator chunkGenerator, RandomSource random, BlockPos origin) {
         Identifier dimensionName = level.getLevel().dimension().identifier();
 
         // Do not generate if the current dimension is blacklisted.
@@ -31,7 +38,7 @@ public class CaveRootedTreeFeature extends DynamicTreeFeature {
             return false;
         }
 
-        BlockPos originPos = context.origin();
+        BlockPos originPos = origin;
         ChunkPos chunkPos = ChunkPos.containing(originPos);
         LevelContext levelContext = LevelContext.create(level);
 

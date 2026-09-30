@@ -446,8 +446,8 @@ public class FalloverAnimationHandler implements AnimationHandler {
         Vec3 toolVec = new Vec3(toolDir.getStepX(), toolDir.getStepY(), toolDir.getStepZ()).scale(radius / 16.0f);
 
         poseStack.translate(-toolVec.x, -toolVec.y, -toolVec.z);
-        poseStack.mulPose(Axis.ZN.rotationDegrees(yRotDiff));
-        poseStack.mulPose(Axis.XP.rotationDegrees(xRotDiff));
+        poseStack.rotate(Axis.ZN.rotationDegrees(yRotDiff));
+        poseStack.rotate(Axis.XP.rotationDegrees(xRotDiff));
         poseStack.translate(toolVec.x, toolVec.y, toolVec.z);
 
         poseStack.translate(-0.5, 0, -0.5);

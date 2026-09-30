@@ -569,14 +569,14 @@ public class LeavesProperties extends RegistryEntry<LeavesProperties> implements
                 .speedFactor(isMovementVanilla() ? 1.0f : 0.25f)
                 .mapColor(MapColor.PLANT)
                 .ignitedByLava()
-                .pushReaction(PushReaction.DESTROY)
+                .pushReaction(PushReaction.POPPED)
                 .strength(0.2F)
                 .randomTicks()
                 .sound(SoundType.GRASS)
                 .noOcclusion()
                 .isValidSpawn((s, r, p, e) -> e == EntityTypes.OCELOT || e == EntityTypes.PARROT)
                 .isSuffocating((s, r, p) -> false)
-                .isViewBlocking((s, r, p) -> false)
+                .isViewBlocking((s, r, p, a) -> false)
                 .isRedstoneConductor((s, r, p) -> false)
                 .forceSolidOn();
     }

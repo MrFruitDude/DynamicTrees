@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:brewing",
+  "input": {
+    "item": "minecraft:potion",
+    "potion_contents": {
+      "potions": "minecraft:thick"
+    }
+  },
+  "reagent": {
+    "item": "minecraft:charcoal"
+  },
+  "output": {
+    "id": "dynamictrees:dendro_potion",
+    "components": {
+      "dynamictrees:potion_index": 0
+    }
+  }
+}

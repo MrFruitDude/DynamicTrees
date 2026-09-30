@@ -77,7 +77,7 @@ public class Seed extends Item {
             final Level level = entityItem.level();
             if (!level.isClientSide()) {//Server side only
                 final ItemStack seedStack = entityItem.getItem();
-                final BlockPos pos = new BlockPos(entityItem.blockPosition());
+                final BlockPos pos = entityItem.blockPosition();
                 VoluntaryPlantEventResult result = Services.EVENT.postSeedVoluntaryPlantEvent(entityItem, this.getSpecies().selfOrLocationOverride(level, pos), pos, this.shouldPlant(level, pos, seedStack));
                 if (!result.cancelled() && result.willPlant()) {
                     this.doPlanting(level, pos, null, seedStack);

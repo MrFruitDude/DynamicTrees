@@ -151,7 +151,7 @@ public class FallingTreeEntityModel extends EntityModel<FallingTreeRenderState> 
                 g = (float) (color >> 8 & 255) / 255F;
                 b = (float) (color & 255) / 255F;
             }
-            if (bakedQuad.materialInfo().shade()) {
+            if (bakedQuad.materialInfo().shadeDirectionOverride() == null) {
                 float diffuse = 0.8f;
                 r *= diffuse;
                 g *= diffuse;

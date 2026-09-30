@@ -1,5 +1,6 @@
 package com.dtteam.dynamictrees.loot.entry;
 
+import java.util.Optional;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -8,7 +9,7 @@ import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
+import net.minecraft.world.level.storage.loot.entries.SingleEntryContainerBase;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
@@ -18,24 +19,24 @@ import java.util.function.Consumer;
 /**
  * @author Harley O'Connor
  */
-public final class WeightedItemLootPoolEntry extends LootPoolSingletonContainer {
+public final class WeightedItemLootPoolEntry extends SingleEntryContainerBase {
 
     public static final MapCodec<WeightedItemLootPoolEntry> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance
                     .group(WeightedList.codec(BuiltInRegistries.ITEM.holderByNameCodec()).fieldOf("items").forGetter(c->c.items))
-                    .and(singletonFields(instance))
+                    .and(uniformFields(instance))
                     .apply(instance, WeightedItemLootPoolEntry::new));
 
     private final WeightedList<Holder<Item>> items;
 
-    public WeightedItemLootPoolEntry(WeightedList<Holder<Item>> items, int weight, int quality, List<LootItemCondition> conditions,
-                                     List<LootItemFunction> functions) {
+    public WeightedItemLootPoolEntry(WeightedList<Holder<Item>> items, int weight, int quality, Optional<Holder<LootItemCondition>> conditions,
+                                     Optional<Holder<LootItemFunction>> functions) {
         super(weight, quality, conditions, functions);
         this.items = items;
     }
 
     @Override
-    public MapCodec<? extends LootPoolSingletonContainer> codec() {
+    public MapCodec<? extends SingleEntryContainerBase> codec() {
         return CODEC;
     }
 
