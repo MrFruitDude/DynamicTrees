@@ -7,6 +7,7 @@ import com.dtteam.dynamictrees.block.pod.Pod;
 import com.dtteam.dynamictrees.block.soil.SoilProperties;
 import com.dtteam.dynamictrees.client.BlockColorMultipliers;
 import com.dtteam.dynamictrees.config.DTConfigs;
+import com.dtteam.dynamictrees.config.LegacyConfigMigration;
 import com.dtteam.dynamictrees.data.GatherDataHelper;
 import com.dtteam.dynamictrees.data.generator.DTExtraLangGenerator;
 import com.dtteam.dynamictrees.data.generator.DTExtraModelGenerator;
@@ -20,6 +21,7 @@ import com.dtteam.dynamictrees.treepack.Resources;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ConfigTracker;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -34,8 +36,9 @@ public class DynamicTreesNeoForge {
         eventBus.addListener(this::gatherServerData);
         eventBus.addListener(this::gatherClientData);
 
-        container.registerConfig(ModConfig.Type.SYNCED, DTConfigs.SERVER_CONFIG);
-        container.registerConfig(ModConfig.Type.LOCAL, DTConfigs.COMMON_CONFIG);
+        // port26.3: register through ConfigTracker to get the ModConfig, then carry over pre-.37 (1.21) config files.
+        LegacyConfigMigration.migrate(ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.SYNCED, DTConfigs.SERVER_CONFIG, container), eventBus);
+        LegacyConfigMigration.migrate(ConfigTracker.INSTANCE.registerConfig(ModConfig.Type.LOCAL, DTConfigs.COMMON_CONFIG, container), eventBus);
         container.registerConfig(ModConfig.Type.CLIENT, DTConfigs.CLIENT_CONFIG);
 
         NeoForgeRegistryHandler.setup(DynamicTrees.MOD_ID, eventBus);
