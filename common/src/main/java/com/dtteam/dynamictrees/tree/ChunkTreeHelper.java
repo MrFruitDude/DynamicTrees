@@ -17,6 +17,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -242,6 +243,13 @@ public class ChunkTreeHelper {
 
     @SuppressWarnings("deprecation")
     public static boolean canAccessStateSafely(BlockGetter level, BlockPos pos) {
+        if (level instanceof WorldGenRegion region) {
+            // MC 26.x logs every read outside the generating step's write zone as an "unsafe terrain read" (the spawn step
+            // may only touch its own chunk). hasChunk is true for the whole dependency ring, so ask the write zone instead.
+            final ChunkPos center = region.getCenter();
+            return (SectionPos.blockToSectionCoord(pos.getX()) == center.x() && SectionPos.blockToSectionCoord(pos.getZ()) == center.z())
+                || region.isWithinWriteZone(pos);
+        }
         if (level instanceof LevelReader) { // Handles most cases.
             return ((LevelReader) level).hasChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()));
         } else if (level instanceof PathNavigationRegion pathLevel) { // Handles Region.
