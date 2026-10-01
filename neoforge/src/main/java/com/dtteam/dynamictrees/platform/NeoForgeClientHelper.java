@@ -11,7 +11,7 @@ public class NeoForgeClientHelper implements IClientHelper {
     @Override
     public int getPixelRGBA(TextureAtlasSprite sprite, int x, int y) {
         try {
-            return sprite.getPixelRGBA(0, x, y);
+            return sprite.getPixelARGB(0, x, y);
         } catch (IllegalStateException e) {
             DynamicTrees.LOG.warn("Image {} is not allocated.", sprite);
             return 0;

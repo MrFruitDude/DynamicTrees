@@ -34,8 +34,8 @@ public class DynamicTreesNeoForge {
         eventBus.addListener(this::gatherServerData);
         eventBus.addListener(this::gatherClientData);
 
-        container.registerConfig(ModConfig.Type.SERVER, DTConfigs.SERVER_CONFIG);
-        container.registerConfig(ModConfig.Type.COMMON, DTConfigs.COMMON_CONFIG);
+        container.registerConfig(ModConfig.Type.SYNCED, DTConfigs.SERVER_CONFIG);
+        container.registerConfig(ModConfig.Type.LOCAL, DTConfigs.COMMON_CONFIG);
         container.registerConfig(ModConfig.Type.CLIENT, DTConfigs.CLIENT_CONFIG);
 
         NeoForgeRegistryHandler.setup(DynamicTrees.MOD_ID, eventBus);
